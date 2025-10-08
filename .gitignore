@@ -11,8 +11,10 @@ email-builder/yarn.lock
 email-builder/dist/
 static/public/static/altcha.umd.js
 .vscode/
+.claude/
 
 config.toml
+yarn.lock
 node_modules
 listmonk
 dist/*
