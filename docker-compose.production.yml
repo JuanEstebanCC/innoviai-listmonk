@@ -1,0 +1,60 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: listmonk_app
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    networks:
+      - listmonk
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      LISTMONK_app__address: 0.0.0.0:9000
+      LISTMONK_db__host: listmonk_db
+      LISTMONK_db__port: 5432
+      LISTMONK_db__user: ${DB_USER:-listmonk}
+      LISTMONK_db__password: ${DB_PASSWORD:-listmonk}
+      LISTMONK_db__database: ${DB_NAME:-listmonk}
+      LISTMONK_db__ssl_mode: disable
+      LISTMONK_db__max_open: 25
+      LISTMONK_db__max_idle: 25
+      LISTMONK_db__max_lifetime: 300s
+      TZ: ${TZ:-UTC}
+      LISTMONK_ADMIN_USER: ${LISTMONK_ADMIN_USER:-}
+      LISTMONK_ADMIN_PASSWORD: ${LISTMONK_ADMIN_PASSWORD:-}
+    volumes:
+      - ./uploads:/listmonk/uploads:rw
+    command: >
+      sh -c "./listmonk --install --idempotent --yes &&
+             ./listmonk --upgrade --yes &&
+             ./listmonk"
+
+  db:
+    image: postgres:17-alpine
+    container_name: listmonk_db
+    restart: unless-stopped
+    networks:
+      - listmonk
+    environment:
+      POSTGRES_USER: ${DB_USER:-listmonk}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-listmonk}
+      POSTGRES_DB: ${DB_NAME:-listmonk}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-listmonk}"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    volumes:
+      - listmonk-data:/var/lib/postgresql/data
+
+networks:
+  listmonk:
+    driver: bridge
+
+volumes:
+  listmonk-data:
+    driver: local
