@@ -103,13 +103,25 @@ DB_SSL_MODE=${DB_SSL_MODE:-disable}
 echo ""
 print_info "Verificando conexión a PostgreSQL..."
 
-# Verificar conexión a PostgreSQL
-if docker run --rm postgres:17-alpine psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" <<< "$DB_PASSWORD" &> /dev/null; then
-    print_success "Conexión a PostgreSQL exitosa"
+# Verificar conexión a PostgreSQL usando psql local si está disponible
+if command -v psql &> /dev/null; then
+    if PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" &> /dev/null; then
+        print_success "Conexión a PostgreSQL exitosa"
+    else
+        print_warning "No se pudo verificar la conexión a PostgreSQL con psql"
+        print_warning "Continuando con la instalación..."
+        echo ""
+        read -p "¿Deseas continuar de todas formas? (s/n) [s]: " CONTINUE
+        CONTINUE=${CONTINUE:-s}
+        if [[ ! "$CONTINUE" =~ ^[Ss]$ ]]; then
+            print_error "Instalación cancelada"
+            exit 1
+        fi
+    fi
 else
-    print_error "No se pudo conectar a PostgreSQL"
-    print_warning "Verifica las credenciales y que el Security Group permita conexiones desde esta EC2"
-    exit 1
+    print_warning "psql no está instalado, omitiendo verificación de PostgreSQL"
+    print_info "Asegúrate de que las credenciales sean correctas"
+    echo ""
 fi
 
 echo ""
