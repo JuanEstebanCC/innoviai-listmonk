@@ -256,6 +256,14 @@ print_info "======================================"
 print_info "Construyendo la imagen Docker"
 print_info "======================================"
 echo ""
+
+# Eliminar archivo .env si existe (puede causar conflictos con config.toml)
+if [ -f ".env" ]; then
+    print_info "Eliminando archivo .env existente..."
+    rm -f .env
+    print_success "Archivo .env eliminado"
+fi
+
 print_warning "Esto puede tomar varios minutos..."
 echo ""
 
