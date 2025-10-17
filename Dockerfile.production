@@ -7,6 +7,9 @@ WORKDIR /app
 COPY frontend/package.json frontend/yarn.lock ./frontend/
 COPY frontend/email-builder/package.json frontend/email-builder/yarn.lock ./frontend/email-builder/
 
+# Copy static directory first to avoid post-install errors
+COPY static ./static
+
 # Install dependencies
 RUN cd frontend/email-builder && yarn install
 RUN cd frontend && yarn install
