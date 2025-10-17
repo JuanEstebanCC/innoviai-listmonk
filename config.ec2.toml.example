@@ -1,0 +1,249 @@
+# Archivo de configuración de Listmonk para EC2 con PostgreSQL y Amazon SES existentes
+# Copia este archivo a config.toml y modifica con tus valores
+
+[app]
+# Dirección donde correrá la aplicación
+# 0.0.0.0:9000 permite acceso desde cualquier interfaz en el puerto 9000
+address = "0.0.0.0:9000"
+
+# URL raíz de tu aplicación
+# Opciones:
+# - Durante setup inicial: http://TU_IP_PUBLICA:9000
+# - Con dominio sin SSL: http://tu-dominio.com
+# - Con dominio y SSL: https://tu-dominio.com
+root = "http://TU_IP_PUBLICA:9000"
+
+# Base de datos PostgreSQL
+[db]
+# Endpoint de tu base de datos PostgreSQL
+# Para RDS: tu-instancia.xxxxxx.region.rds.amazonaws.com
+# Para otra instancia EC2: IP privada o endpoint
+host = "tu-rds-endpoint.rds.amazonaws.com"
+port = 5432
+
+# Credenciales de la base de datos
+user = "listmonk"
+password = "tu_password_seguro_aqui"
+database = "listmonk"
+
+# Modo SSL
+# - "disable": Sin SSL (solo para desarrollo o redes privadas)
+# - "require": Requiere SSL (recomendado para RDS en producción)
+# - "verify-full": Verifica certificado (más seguro)
+ssl_mode = "disable"
+
+# Configuración del pool de conexiones
+max_open = 25
+max_idle = 25
+max_lifetime = "300s"
+
+# Parámetros adicionales de PostgreSQL (opcional)
+# Ejemplo: "application_name=listmonk connect_timeout=10"
+params = ""
+
+# Configuración SMTP con Amazon SES
+[[smtp]]
+enabled = true
+
+# Endpoint SMTP de Amazon SES según tu región:
+# us-east-1: email-smtp.us-east-1.amazonaws.com
+# us-west-2: email-smtp.us-west-2.amazonaws.com
+# eu-west-1: email-smtp.eu-west-1.amazonaws.com
+# Para ver todas las regiones: https://docs.aws.amazon.com/ses/latest/dg/regions.html
+host = "email-smtp.us-east-1.amazonaws.com"
+
+# Puerto para SES
+# 587: STARTTLS (recomendado)
+# 465: TLS Wrapper
+# 25: No usar con SES
+port = 587
+
+# Protocolo de autenticación
+# SES usa "login"
+auth_protocol = "login"
+
+# Credenciales SMTP de Amazon SES
+# Obtén estas credenciales en: AWS Console > SES > SMTP Settings > Create SMTP Credentials
+username = "TU_SMTP_USERNAME_DE_SES"
+password = "TU_SMTP_PASSWORD_DE_SES"
+
+# Hostname para el saludo SMTP (opcional, déjalo vacío para usar el hostname del sistema)
+hello_hostname = ""
+
+# Número máximo de conexiones SMTP simultáneas
+# Para SES, considera tus límites de envío
+max_conns = 10
+
+# Número de reintentos para mensajes fallidos
+max_msg_retries = 2
+
+# Tiempo de espera para conexiones inactivas
+idle_timeout = "15s"
+
+# Tiempo máximo de espera para envío
+wait_timeout = "5s"
+
+# Configuración TLS
+# Amazon SES requiere TLS
+tls_enabled = true
+
+# No omitir verificación de certificados (seguridad)
+tls_skip_verify = false
+
+# Headers adicionales para todos los emails (opcional)
+# email_headers = [
+#   {X-Custom-Header = "valor"},
+#   {X-Campaign-ID = "{{.Campaign.UUID}}"}
+# ]
+email_headers = []
+
+# Puedes configurar múltiples servidores SMTP
+# Descomentar y configurar si necesitas un servidor adicional
+# [[smtp]]
+# enabled = false
+# host = "smtp.gmail.com"
+# port = 587
+# auth_protocol = "login"
+# username = "tu@gmail.com"
+# password = "tu_app_password"
+# hello_hostname = ""
+# max_conns = 5
+# max_msg_retries = 2
+# idle_timeout = "15s"
+# wait_timeout = "5s"
+# tls_enabled = true
+# tls_skip_verify = false
+# email_headers = []
+
+# Configuración de privacidad
+[privacy]
+# Permitir que los usuarios se agreguen a listas de bloqueo
+allow_blocklist = true
+
+# Permitir a los administradores exportar datos de suscriptores
+allow_export = true
+
+# Permitir a los suscriptores eliminar completamente sus datos
+allow_wipe = true
+
+# Tiempo de espera antes de procesar solicitudes de exportación o eliminación
+exportorwipe_delay = "48h"
+
+# Configuración de seguridad
+[security]
+# Habilitar CAPTCHA en formularios públicos
+# Recomendado para evitar spam en suscripciones públicas
+enable_captcha = false
+
+# Si habilitas CAPTCHA, configura las claves de reCAPTCHA:
+# captcha_key = "tu_site_key"
+# captcha_secret = "tu_secret_key"
+
+# Configuración de uploads
+[upload]
+# Directorio donde se guardarán los archivos subidos
+# Este directorio se mapea desde Docker
+path = "uploads"
+
+# Tipos de archivo permitidos
+extensions = ["jpg", "jpeg", "png", "gif", "svg", "pdf"]
+
+# Tamaño máximo de archivo en bytes
+# 52428800 = 50MB
+max_file_size = 52428800
+
+# Proveedor de almacenamiento
+# filesystem: Almacenamiento local (predeterminado)
+# s3: Amazon S3 (si quieres usar S3 en lugar de almacenamiento local)
+provider = "filesystem"
+
+# Si usas S3, descomenta y configura:
+# [upload.s3]
+# aws_access_key_id = "tu_access_key"
+# aws_secret_access_key = "tu_secret_key"
+# aws_default_region = "us-east-1"
+# bucket = "tu-bucket-name"
+# bucket_path = "listmonk/uploads"
+# bucket_url = "https://tu-bucket-name.s3.amazonaws.com"
+# bucket_type = "public"
+# expiry = "14d"
+
+# Configuración de bounce (rebotes)
+[bounce]
+# Habilitar procesamiento de rebotes
+enabled = true
+
+# Habilitar webhooks para recibir notificaciones de rebotes
+# Amazon SES puede enviar notificaciones SNS a tu endpoint
+webhooks_enabled = true
+
+# Número de rebotes antes de marcar como "bounced"
+count = 2
+
+# Acción a tomar cuando se alcanza el límite de rebotes
+# blocklist: Agregar a lista de bloqueo
+# delete: Eliminar suscriptor
+action = "blocklist"
+
+# Configuración de mensajería
+[messaging]
+# Tamaño del batch para procesamiento de mensajes
+batch_size = 1000
+
+# Número de workers para envío de mensajes
+# Ajustar según los límites de tu cuenta SES
+# Para cuentas nuevas de SES, usa un valor bajo (1-2)
+# Para cuentas con límites aumentados, puedes usar más
+concurrency = 5
+
+# Intervalo de mensajes (para respetar límites de tasa)
+# Amazon SES tiene límites de envío por segundo
+# Ajusta según tu límite de envío
+# Ejemplo: Si tienes 14 emails/segundo, usa 70ms (1000ms/14)
+message_rate = 100
+
+# Tamaño máximo del cuerpo del mensaje en bytes
+max_body_size = 1000000
+
+# Configuración de archivos adjuntos
+[attachments]
+# Habilitar adjuntos en campañas
+enabled = true
+
+# Tamaño máximo total de adjuntos por email (en bytes)
+# 10485760 = 10MB
+# Amazon SES tiene un límite de 10MB por mensaje (incluyendo adjuntos)
+max_total_size = 10485760
+
+# Configuración del planificador de campañas
+[campaigns]
+# Tamaño del lote para campañas
+batch_size = 1000
+
+# Intervalo entre lotes (para evitar sobrecargar)
+batch_interval = "1s"
+
+# Configuración de media/archivos
+[media]
+# Tamaño máximo de cache para archivos de media
+cache_size = 52428800
+
+# Configuración de administración
+[admin]
+# Nombre de la aplicación (aparece en la interfaz)
+app_name = "InnoviAI Listmonk"
+
+# Idioma de la interfaz (es para español, en para inglés)
+# Opciones: en, es, fr, de, pt-BR, etc.
+lang = "es"
+
+# Configuración de logs
+[log]
+# Nivel de log
+# debug, info, warn, error
+level = "info"
+
+# Formato de log
+# text, json
+format = "text"
+

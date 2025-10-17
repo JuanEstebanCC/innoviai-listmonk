@@ -1,0 +1,38 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: listmonk_app
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      # Directorio para archivos subidos
+      - ./uploads:/listmonk/uploads:rw
+      # Archivo de configuración
+      - ./config.toml:/listmonk/config.toml:ro
+    # Comando para inicializar, actualizar y ejecutar listmonk
+    # --install: Crea las tablas de base de datos si no existen
+    # --idempotent: No falla si las tablas ya existen
+    # --yes: Confirma automáticamente las preguntas
+    # --upgrade: Aplica migraciones de base de datos
+    command: >
+      sh -c "./listmonk --install --idempotent --yes &&
+             ./listmonk --upgrade --yes &&
+             ./listmonk"
+    # Healthcheck para verificar que la aplicación está funcionando
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:9000/api/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
