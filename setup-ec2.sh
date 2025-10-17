@@ -145,7 +145,16 @@ print_info "======================================"
 echo ""
 
 # Obtener IP pública de la instancia
-PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo "TU_IP_PUBLICA")
+PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null)
+if [ -z "$PUBLIC_IP" ]; then
+    PUBLIC_IP=$(curl -s http://checkip.amazonaws.com 2>/dev/null)
+fi
+if [ -z "$PUBLIC_IP" ]; then
+    PUBLIC_IP=$(curl -s https://api.ipify.org 2>/dev/null)
+fi
+if [ -z "$PUBLIC_IP" ]; then
+    PUBLIC_IP="TU_IP_PUBLICA"
+fi
 print_info "IP Pública detectada: $PUBLIC_IP"
 
 read -p "¿Tienes un dominio configurado? (s/n) [n]: " HAS_DOMAIN
@@ -172,6 +181,13 @@ print_info "======================================"
 print_info "Creando archivo de configuración"
 print_info "======================================"
 echo ""
+
+# Asegurar permisos correctos del directorio del proyecto
+print_info "Configurando permisos del directorio..."
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+sudo chown -R $USER:$USER "$SCRIPT_DIR" 2>/dev/null || true
+sudo chmod -R 755 "$SCRIPT_DIR" 2>/dev/null || true
+print_success "Permisos configurados"
 
 # Crear directorio de uploads si no existe
 mkdir -p uploads
