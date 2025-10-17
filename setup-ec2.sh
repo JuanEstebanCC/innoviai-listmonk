@@ -54,15 +54,23 @@ if ! command -v docker &> /dev/null; then
 fi
 print_success "Docker instalado"
 
-# Verificar Docker Compose
-if ! docker compose version &> /dev/null; then
+# Verificar Docker Compose (soporta tanto 'docker compose' como 'docker-compose')
+DOCKER_COMPOSE_CMD=""
+if docker compose version &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker compose"
+elif command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+else
     print_error "Docker Compose no está instalado"
     echo ""
     echo "Instala Docker Compose con:"
     echo "  sudo apt install docker-compose-plugin -y"
+    echo "O para Amazon Linux:"
+    echo "  sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-\$(uname -s)-\$(uname -m) -o /usr/local/bin/docker-compose"
+    echo "  sudo chmod +x /usr/local/bin/docker-compose"
     exit 1
 fi
-print_success "Docker Compose instalado"
+print_success "Docker Compose instalado ($DOCKER_COMPOSE_CMD)"
 
 # Verificar que el usuario tiene permisos de Docker
 if ! docker ps &> /dev/null; then
@@ -223,7 +231,7 @@ echo ""
 print_warning "Esto puede tomar varios minutos..."
 echo ""
 
-if docker compose -f docker-compose.ec2.yml build; then
+if $DOCKER_COMPOSE_CMD -f docker-compose.ec2.yml build; then
     print_success "Imagen construida exitosamente"
 else
     print_error "Error al construir la imagen"
@@ -236,7 +244,7 @@ print_info "Iniciando Listmonk"
 print_info "======================================"
 echo ""
 
-if docker compose -f docker-compose.ec2.yml up -d; then
+if $DOCKER_COMPOSE_CMD -f docker-compose.ec2.yml up -d; then
     print_success "Listmonk iniciado exitosamente"
 else
     print_error "Error al iniciar Listmonk"
@@ -248,11 +256,11 @@ print_info "Esperando a que Listmonk esté listo..."
 sleep 10
 
 # Verificar que el contenedor esté corriendo
-if docker compose -f docker-compose.ec2.yml ps | grep -q "Up"; then
+if $DOCKER_COMPOSE_CMD -f docker-compose.ec2.yml ps | grep -q "Up"; then
     print_success "Contenedor corriendo"
 else
     print_error "El contenedor no está corriendo"
-    print_info "Ver logs con: docker compose -f docker-compose.ec2.yml logs"
+    print_info "Ver logs con: $DOCKER_COMPOSE_CMD -f docker-compose.ec2.yml logs"
     exit 1
 fi
 
@@ -270,10 +278,10 @@ echo ""
 print_warning "¡IMPORTANTE! Cambia la contraseña después del primer inicio de sesión"
 echo ""
 echo "Comandos útiles:"
-echo "  Ver logs:      docker compose -f docker-compose.ec2.yml logs -f"
-echo "  Reiniciar:     docker compose -f docker-compose.ec2.yml restart"
-echo "  Detener:       docker compose -f docker-compose.ec2.yml down"
-echo "  Ver estado:    docker compose -f docker-compose.ec2.yml ps"
+echo "  Ver logs:      $DOCKER_COMPOSE_CMD -f docker-compose.ec2.yml logs -f"
+echo "  Reiniciar:     $DOCKER_COMPOSE_CMD -f docker-compose.ec2.yml restart"
+echo "  Detener:       $DOCKER_COMPOSE_CMD -f docker-compose.ec2.yml down"
+echo "  Ver estado:    $DOCKER_COMPOSE_CMD -f docker-compose.ec2.yml ps"
 echo ""
 
 if [[ "$HAS_DOMAIN" =~ ^[Ss]$ ]] && [[ ! "$HAS_SSL" =~ ^[Ss]$ ]]; then
@@ -286,6 +294,6 @@ if [[ "$HAS_DOMAIN" =~ ^[Ss]$ ]] && [[ ! "$HAS_SSL" =~ ^[Ss]$ ]]; then
 fi
 
 print_info "Ver logs en tiempo real con:"
-echo "  docker compose -f docker-compose.ec2.yml logs -f"
+echo "  $DOCKER_COMPOSE_CMD -f docker-compose.ec2.yml logs -f"
 echo ""
 
