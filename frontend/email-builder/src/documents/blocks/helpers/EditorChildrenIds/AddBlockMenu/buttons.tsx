@@ -14,6 +14,7 @@ import {
 } from '@mui/icons-material';
 
 import { TEditorBlock } from '../../../../editor/core';
+import { t } from '../../../../../i18n/es';
 
 type TButtonProps = {
   label: string;
@@ -22,12 +23,12 @@ type TButtonProps = {
 };
 export const BUTTONS: TButtonProps[] = [
   {
-    label: 'Heading',
+    label: t('Heading'),
     icon: <HMobiledataOutlined />,
     block: () => ({
       type: 'Heading',
       data: {
-        props: { text: 'Heading' },
+        props: { text: t('Heading') },
         style: {
           padding: { top: 16, bottom: 16, left: 24, right: 24 },
         },
@@ -35,12 +36,12 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
-    label: 'Text',
+    label: t('Text'),
     icon: <NotesOutlined />,
     block: () => ({
       type: 'Text',
       data: {
-        props: { text: 'My new text block' },
+        props: { text: 'Mi nuevo bloque de texto' },
         style: {
           padding: { top: 16, bottom: 16, left: 24, right: 24 },
           fontWeight: 'normal',
@@ -50,13 +51,13 @@ export const BUTTONS: TButtonProps[] = [
   },
 
   {
-    label: 'Button',
+    label: t('Button'),
     icon: <SmartButtonOutlined />,
     block: () => ({
       type: 'Button',
       data: {
         props: {
-          text: 'Button',
+          text: t('Button'),
           url: 'https://listmonk.app',
         },
         style: { padding: { top: 16, bottom: 16, left: 24, right: 24 } },
@@ -64,14 +65,14 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
-    label: 'Image',
+    label: t('Image'),
     icon: <ImageOutlined />,
     block: () => ({
       type: 'Image',
       data: {
         props: {
           url: 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg',
-          alt: 'Sample product',
+          alt: 'Producto de muestra',
           contentAlignment: 'middle',
           linkHref: null,
         },
@@ -80,7 +81,7 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
-    label: 'Avatar',
+    label: t('Avatar'),
     icon: <AccountCircleOutlined />,
     block: () => ({
       type: 'Avatar',
@@ -94,7 +95,7 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
-    label: 'Divider',
+    label: t('Divider'),
     icon: <HorizontalRuleOutlined />,
     block: () => ({
       type: 'Divider',
@@ -107,7 +108,7 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
-    label: 'Spacer',
+    label: t('Spacer'),
     icon: <Crop32Outlined />,
     block: () => ({
       type: 'Spacer',
@@ -115,12 +116,12 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
-    label: 'Html',
+    label: t('HTML'),
     icon: <HtmlOutlined />,
     block: () => ({
       type: 'Html',
       data: {
-        props: { contents: '<strong>Hello world</strong>' },
+        props: { contents: '<strong>Hola mundo</strong>' },
         style: {
           fontSize: 16,
           textAlign: null,
@@ -130,7 +131,7 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
-    label: 'Columns',
+    label: t('Columns'),
     icon: <ViewColumnOutlined />,
     block: () => ({
       type: 'ColumnsContainer',
@@ -145,7 +146,7 @@ export const BUTTONS: TButtonProps[] = [
     }),
   },
   {
-    label: 'Container',
+    label: t('Container'),
     icon: <LibraryAddOutlined />,
     block: () => ({
       type: 'Container',

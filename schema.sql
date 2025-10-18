@@ -242,7 +242,7 @@ INSERT INTO settings (key, value) VALUES
     ('app.send_optin_confirmation', 'true'),
     ('app.check_updates', 'true'),
     ('app.notify_emails', '[]'),
-    ('app.lang', '"en"'),
+    ('app.lang', '"es"'),
     ('privacy.individual_tracking', 'false'),
     ('privacy.unsubscribe_header', 'true'),
     ('privacy.allow_blocklist', 'true'),
