@@ -48,7 +48,7 @@ print_success "Sistema actualizado"
 
 # Instalar dependencias básicas
 print_info "Instalando herramientas básicas..."
-sudo dnf install -y wget curl git tar gzip
+sudo dnf install -y wget git tar gzip 2>/dev/null || true
 print_success "Herramientas básicas instaladas"
 
 # Instalar Node.js 20
