@@ -164,6 +164,24 @@ export const translations = {
   'Below': 'Abajo',
   'Before': 'Antes',
   'After': 'Después',
+
+  // Bloques
+  'Heading block': 'Bloque de encabezado',
+  'Text block': 'Bloque de texto',
+  'Button block': 'Bloque de botón',
+  'Image block': 'Bloque de imagen',
+  'Divider block': 'Bloque divisor',
+  'Spacer block': 'Bloque espaciador',
+  'HTML block': 'Bloque HTML',
+  'Container block': 'Bloque contenedor',
+  'Columns block': 'Bloque de columnas',
+  'Avatar block': 'Bloque de avatar',
+
+  // Labels comunes
+  'Content': 'Contenido',
+  'Level': 'Nivel',
+  'Markdown': 'Markdown',
+  'Please fill out this field.': 'Por favor completa este campo.',
 };
 
 export type TranslationKey = keyof typeof translations;

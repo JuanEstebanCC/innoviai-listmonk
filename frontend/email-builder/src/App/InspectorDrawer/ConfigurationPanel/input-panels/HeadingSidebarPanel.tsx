@@ -7,6 +7,7 @@ import BaseSidebarPanel from './helpers/BaseSidebarPanel';
 import RadioGroupInput from './helpers/inputs/RadioGroupInput';
 import TextInput from './helpers/inputs/TextInput';
 import MultiStylePropertyPanel from './helpers/style-inputs/MultiStylePropertyPanel';
+import { t } from '../../../../../i18n/es';
 
 type HeadingSidebarPanelProps = {
   data: HeadingProps;
@@ -26,9 +27,9 @@ export default function HeadingSidebarPanel({ data, setData }: HeadingSidebarPan
   };
 
   return (
-    <BaseSidebarPanel title="Heading block">
+    <BaseSidebarPanel title="Bloque de encabezado">
       <TextInput
-        label="Content"
+        label="Contenido"
         rows={3}
         defaultValue={data.props?.text ?? HeadingPropsDefaults.text}
         onChange={(text) => {
@@ -36,7 +37,7 @@ export default function HeadingSidebarPanel({ data, setData }: HeadingSidebarPan
         }}
       />
       <RadioGroupInput
-        label="Level"
+        label="Nivel"
         defaultValue={data.props?.level ?? HeadingPropsDefaults.level}
         onChange={(level) => {
           updateData({ ...data, props: { ...data.props, level } });
